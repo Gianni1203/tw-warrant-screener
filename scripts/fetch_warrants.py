@@ -154,21 +154,33 @@ def fetch_basic(market: str) -> list[dict]:
     return get_json(base + path)
 
 
-def fetch_twse_underlying() -> dict[str, tuple[float, str]]:
-    rows = get_json(f"{TWSE_OPENAPI}/exchangeReport/STOCK_DAY_ALL")
+def fetch_twse_underlying(date: dt.date) -> dict[str, tuple[float, str]]:
+    """上市股票／ETF 收盤價。
+
+    用和權證行情同一支 MI_INDEX（type=ALLBUT0999）並指定同一天，確保日期一致。
+    （OpenAPI 的 STOCK_DAY_ALL 盤後更新較慢，傍晚可能還是前一天的價格。）
+    """
+    js = get_json(TWSE_MI_INDEX, {"date": date.strftime("%Y%m%d"), "type": "ALLBUT0999", "response": "json"})
     out = {}
-    for r in rows:
-        code, px = pick(r, "Code", "證券代號"), num(pick(r, "ClosingPrice", "收盤價"))
-        if code and px:
-            out[str(code).strip()] = (px, str(pick(r, "Name", "證券名稱") or "").strip())
-    log(f"上市標的收盤價 {len(out)} 筆")
+    for fields, data in _mi_index_tables(js):
+        if not (any("證券代號" in f for f in fields) and any("收盤價" in f for f in fields)):
+            continue
+        for row in data:
+            r = dict(zip(fields, row))
+            code, px = str(pick(r, "證券代號") or "").strip(), num(pick(r, "收盤價"))
+            if code and px:
+                out[code] = (px, str(pick(r, "證券名稱") or "").strip())
+    if len(out) < 500:
+        raise RuntimeError(f"{date} 上市收盤價只有 {len(out)} 筆，資料可能還沒出齊，稍後再跑")
+    log(f"上市標的收盤價（{date}）{len(out)} 筆")
     return out
 
 
-def fetch_tpex_underlying() -> dict[str, tuple[float, str]]:
+def fetch_tpex_underlying(date: dt.date) -> dict[str, tuple[float, str]]:
     hits = find_paths(TPEX_SWAGGER, ["收盤"], any_of=["上櫃股票", "上櫃證券"], exclude=["權證", "債", "興櫃"])
     path = hits[0][0] if hits else "/tpex_mainboard_daily_close_quotes"
     rows = get_json(TPEX_OPENAPI + path)
+    check_date(rows, date, "上櫃標的收盤價")
     out = {}
     for r in rows:
         code = pick(r, "SecuritiesCompanyCode", "Code", "代號")
@@ -177,6 +189,14 @@ def fetch_tpex_underlying() -> dict[str, tuple[float, str]]:
             out[str(code).strip()] = (px, str(pick(r, "CompanyName", "Name", "名稱") or "").strip())
     log(f"上櫃標的收盤價（{path}）{len(out)} 筆")
     return out
+
+
+def check_date(rows: list[dict], date: dt.date, what: str):
+    """資料有日期欄位時，確認和權證行情是同一天，避免新舊價格混用。"""
+    dates = {parse_date(pick(r, "Date", "資料日期", "日期")) for r in rows[:50]} - {None}
+    if dates and date not in dates:
+        got = ", ".join(sorted(str(d) for d in dates))
+        raise RuntimeError(f"{what}日期是 {got}，不是 {date}，資料還沒更新，稍後再跑")
 
 
 def _mi_index_tables(js: dict):
@@ -213,7 +233,7 @@ def fetch_twse_quotes(date: dt.date) -> dict[str, dict]:
     return out
 
 
-def fetch_tpex_quotes() -> dict[str, dict]:
+def fetch_tpex_quotes(date: dt.date) -> dict[str, dict]:
     hits = find_paths(TPEX_SWAGGER, ["權證"], any_of=["行情", "收盤", "成交"],
                       exclude=["牛熊", "基本資料", "發行人", "註銷", "重大"])
     if not hits:
@@ -221,8 +241,10 @@ def fetch_tpex_quotes() -> dict[str, dict]:
         return {}
     path, summary = hits[0]
     log(f"TPEx 權證行情：{path}（{summary}）")
+    rows = get_json(TPEX_OPENAPI + path)
+    check_date(rows, date, "上櫃權證行情")
     out = {}
-    for r in get_json(TPEX_OPENAPI + path):
+    for r in rows:
         code = str(pick(r, "SecuritiesCompanyCode", "Code", "代號") or "").strip()
         if not code:
             continue
@@ -329,12 +351,13 @@ def write_output(rows: list[list], asof: dt.date, demo: bool = False):
 
 def run_live():
     asof, tw_quotes = latest_twse_quotes()
-    tw_under = fetch_twse_underlying()
+    time.sleep(3)
+    tw_under = fetch_twse_underlying(asof)
     rows = build_rows("TWSE", fetch_basic("TWSE"), tw_quotes, tw_under, asof)
     try:
-        tp_under = fetch_tpex_underlying()
+        tp_under = fetch_tpex_underlying(asof)
         all_under = {**tw_under, **tp_under}
-        rows += build_rows("TPEX", fetch_basic("TPEX"), fetch_tpex_quotes(), all_under, asof)
+        rows += build_rows("TPEX", fetch_basic("TPEX"), fetch_tpex_quotes(asof), all_under, asof)
     except Exception as e:  # noqa: BLE001  上櫃失敗不影響上市資料
         log(f"⚠ 上櫃資料失敗，只輸出上市權證：{e}")
     if not any(r[11] or r[12] for r in rows):

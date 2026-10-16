@@ -2,8 +2,8 @@ name: 更新權證資料
 
 on:
   schedule:
-    # 週一到週五 台灣時間 17:40（UTC 09:40），等交易所盤後資料出齊
-    - cron: "40 9 * * 1-5"
+    # 週一到週五 台灣時間 18:20（UTC 10:20），等交易所盤後資料出齊
+    - cron: "20 10 * * 1-5"
   workflow_dispatch:   # 可在 Actions 頁面手動執行
 
 permissions:

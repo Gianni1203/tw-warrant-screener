@@ -15,11 +15,13 @@
 ## 架構
 
 ```
-GitHub Actions（週一至週五 17:40 台灣時間）
+GitHub Actions（週一至週五 18:20 台灣時間）
   └─ scripts/fetch_warrants.py
-       ├─ 證交所 OpenAPI：上市權證基本資料、上市個股收盤價
-       ├─ 證交所每日收盤行情 MI_INDEX（0999 認購 / 0999P 認售）：權證買賣價
+       ├─ 證交所 OpenAPI：上市權證基本資料
+       ├─ 證交所每日收盤行情 MI_INDEX（0999 認購 / 0999P 認售 / ALLBUT0999 個股）：
+       │    權證買賣價與標的收盤價，指定同一天，確保日期一致
        ├─ 櫃買中心 OpenAPI：上櫃權證基本資料、上櫃權證行情、上櫃個股收盤價
+       │    （會檢查資料日期，和上市不同天就略過上櫃，避免新舊價格混用）
        └─ 計算 IV、Delta、實際槓桿、價差比、差槓比 → data/warrants.json（commit 回 repo）
 GitHub Pages
   └─ index.html + app.js 讀取 data/warrants.json，在瀏覽器篩選
