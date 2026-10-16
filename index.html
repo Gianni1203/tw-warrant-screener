@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>權證挑選器</title>
+  <meta name="description" content="台灣上市櫃權證篩選：差槓比、到期日、行使比例、價內外、認購認售">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top">
+    <div class="brand">
+      <h1>權證挑選器</h1>
+      <p id="status" class="muted">載入資料中…</p>
+    </div>
+  </header>
+
+  <main class="layout">
+    <form id="filters" class="panel" autocomplete="off">
+      <fieldset class="seg" aria-label="認購/認售">
+        <label><input type="radio" name="cp" value="all" checked><span>全部</span></label>
+        <label><input type="radio" name="cp" value="C"><span>認購</span></label>
+        <label><input type="radio" name="cp" value="P"><span>認售</span></label>
+      </fieldset>
+
+      <label class="field">
+        <span>標的（代號或名稱）</span>
+        <input type="search" name="under" placeholder="例如 2330 或 台積電">
+      </label>
+
+      <div class="field">
+        <span>差槓比 上限 <abbr title="價差比(%) ÷ 實際槓桿，越小越好">?</abbr></span>
+        <input type="number" name="slMax" step="0.05" min="0" placeholder="例如 1">
+      </div>
+
+      <div class="field">
+        <span>剩餘天數（到期日）</span>
+        <div class="range">
+          <input type="number" name="daysMin" min="0" placeholder="最少">
+          <span>~</span>
+          <input type="number" name="daysMax" min="0" placeholder="最多">
+        </div>
+        <small id="dateHint" class="muted"></small>
+      </div>
+
+      <div class="field">
+        <span>行使比例</span>
+        <div class="range">
+          <input type="number" name="ratioMin" step="0.001" min="0" placeholder="最小">
+          <span>~</span>
+          <input type="number" name="ratioMax" step="0.001" min="0" placeholder="最大">
+        </div>
+      </div>
+
+      <div class="field">
+        <span>價內外 %（價內為正、價外為負）</span>
+        <div class="range">
+          <input type="number" name="mnyMin" step="1" placeholder="例如 -15">
+          <span>~</span>
+          <input type="number" name="mnyMax" step="1" placeholder="例如 5">
+        </div>
+      </div>
+
+      <details class="more">
+        <summary>其他條件</summary>
+        <div class="field">
+          <span>實際槓桿 下限</span>
+          <input type="number" name="levMin" step="0.5" min="0" placeholder="例如 3">
+        </div>
+        <div class="field">
+          <span>市場</span>
+          <select name="mkt">
+            <option value="all">上市＋上櫃</option>
+            <option value="上市">只看上市</option>
+            <option value="上櫃">只看上櫃</option>
+          </select>
+        </div>
+        <label class="check"><input type="checkbox" name="needQuote" checked> 需有買賣報價</label>
+        <label class="check"><input type="checkbox" name="needVol"> 當日有成交</label>
+      </details>
+
+      <div class="actions">
+        <button type="button" id="preset">套用常用條件</button>
+        <button type="reset" class="ghost">清除</button>
+      </div>
+    </form>
+
+    <section class="results">
+      <div class="bar">
+        <strong id="count">–</strong>
+        <span class="muted">點欄位標題可排序</span>
+      </div>
+      <div class="table-wrap">
+        <table id="tbl">
+          <thead><tr></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <button id="more" class="ghost wide" hidden>顯示更多</button>
+      <p class="muted note">
+        資料為前一交易日盤後資料，每個交易日收盤後自動更新。實際槓桿、IV 以 Black-Scholes 由買賣中價反推，
+        與券商或發行商數字可能略有差異；本工具僅供參考，不構成投資建議。
+      </p>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
