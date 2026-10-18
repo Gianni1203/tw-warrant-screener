@@ -46,21 +46,60 @@ def log(*a):
     print("[fetch]", *a, file=sys.stderr, flush=True)
 
 
+# 櫃買中心 API 的回應結構紀錄，寫到 data/tpex_debug.json，方便排查上櫃資料問題
+DEBUG: dict = {"calls": {}, "notes": []}
+DEBUG_OUT = ROOT / "data" / "tpex_debug.json"
+
+
+def _record(url: str, data=None, err=None):
+    if "tpex.org.tw" not in url:
+        return
+    ent: dict = {}
+    if err is not None:
+        ent["error"] = str(err)[:500]
+    elif isinstance(data, list):
+        ent["rows"] = len(data)
+        if data and isinstance(data[0], dict):
+            ent["keys"] = list(data[0].keys())
+            ent["sample"] = data[0]
+    elif isinstance(data, dict) and "paths" in data:
+        ent["paths"] = {}
+        for p, ops in data["paths"].items():
+            op = ops.get("get") or {}
+            text = f"{op.get('summary', '')} {op.get('description', '')}"
+            if any(k in text for k in ("權證", "收盤", "行情")):
+                ent["paths"][p] = op.get("summary", "")
+    else:
+        ent["type"] = type(data).__name__
+    DEBUG["calls"][url.replace(TPEX_OPENAPI, "")] = ent
+
+
 # ---------------------------------------------------------------- HTTP
+
+_CACHE: dict = {}
+
 
 def get_json(url: str, params: dict | None = None, retries: int = 3):
     import requests  # 只有抓真實資料時才需要
 
+    key = (url, json.dumps(params, sort_keys=True))
+    if url.endswith("swagger.json") and key in _CACHE:
+        return _CACHE[key]
     last = None
     for i in range(retries):
         try:
             r = requests.get(url, params=params, headers=HEADERS, timeout=60)
             r.raise_for_status()
-            return r.json()
+            data = r.json()
+            _record(url, data=data)
+            if url.endswith("swagger.json"):
+                _CACHE[key] = data
+            return data
         except Exception as e:  # noqa: BLE001
             last = e
             log(f"  第 {i + 1} 次失敗：{url} → {e}")
             time.sleep(3 * (i + 1))
+    _record(url, err=last)
     raise RuntimeError(f"無法取得 {url}: {last}")
 
 
@@ -72,6 +111,8 @@ def find_paths(swagger_url: str, must: list[str], any_of: list[str] | None = Non
     for path, ops in sw.get("paths", {}).items():
         op = ops.get("get") or {}
         text = f"{op.get('summary', '')} {op.get('description', '')}"
+        # 「權證(含牛熊證)」這類說明不應被「牛熊」排除條件擋掉
+        text = re.sub(r"[（(]?(不?含|包含)[^）)]*牛熊證[）)]?", "", text)
         if not all(k in text for k in must):
             continue
         if any_of and not any(k in text for k in any_of):
@@ -178,7 +219,9 @@ def fetch_twse_underlying(date: dt.date) -> dict[str, tuple[float, str]]:
 
 def fetch_tpex_underlying(date: dt.date) -> dict[str, tuple[float, str]]:
     hits = find_paths(TPEX_SWAGGER, ["收盤"], any_of=["上櫃股票", "上櫃證券"], exclude=["權證", "債", "興櫃"])
-    path = hits[0][0] if hits else "/tpex_mainboard_daily_close_quotes"
+    paths = [p for p, _ in hits]
+    # 已知的上櫃個股收盤行情端點優先
+    path = "/tpex_mainboard_daily_close_quotes" if ("/tpex_mainboard_daily_close_quotes" in paths or not paths) else paths[0]
     rows = get_json(TPEX_OPENAPI + path)
     check_date(rows, date, "上櫃標的收盤價")
     out = {}
@@ -336,12 +379,13 @@ def build_rows(market: str, basic: list[dict], quotes: dict[str, dict],
     return rows
 
 
-def write_output(rows: list[list], asof: dt.date, demo: bool = False):
+def write_output(rows: list[list], asof: dt.date, demo: bool = False, notes: list[str] | None = None):
     OUT.parent.mkdir(parents=True, exist_ok=True)
     payload = {
         "asof": asof.isoformat(),
         "updated": dt.datetime.now(TZ).isoformat(timespec="minutes"),
         "demo": demo,
+        "notes": notes or [],
         "fields": FIELDS,
         "rows": rows,
     }
@@ -354,15 +398,29 @@ def run_live():
     time.sleep(3)
     tw_under = fetch_twse_underlying(asof)
     rows = build_rows("TWSE", fetch_basic("TWSE"), tw_quotes, tw_under, asof)
+    notes = []
     try:
         tp_under = fetch_tpex_underlying(asof)
         all_under = {**tw_under, **tp_under}
-        rows += build_rows("TPEX", fetch_basic("TPEX"), fetch_tpex_quotes(asof), all_under, asof)
+        tp_rows = build_rows("TPEX", fetch_basic("TPEX"), fetch_tpex_quotes(asof), all_under, asof)
+        if not tp_rows:
+            raise RuntimeError("上櫃權證基本資料解析後是 0 檔")
+        if not any(r[11] or r[12] for r in tp_rows):
+            notes.append("上櫃權證沒有買賣價，差槓比無法計算")
+        rows += tp_rows
     except Exception as e:  # noqa: BLE001  上櫃失敗不影響上市資料
+        import traceback
         log(f"⚠ 上櫃資料失敗，只輸出上市權證：{e}")
+        notes.append(f"上櫃權證本次未更新（{e}）")
+        DEBUG["error"] = str(e)
+        DEBUG["traceback"] = traceback.format_exc()
+    finally:
+        DEBUG["asof"] = asof.isoformat()
+        DEBUG["notes"] = notes
+        DEBUG_OUT.write_text(json.dumps(DEBUG, ensure_ascii=False, indent=1), encoding="utf-8")
     if not any(r[11] or r[12] for r in rows):
         raise RuntimeError("所有權證都沒有買賣價，欄位可能改名，請檢查 log")
-    write_output(rows, asof)
+    write_output(rows, asof, notes=notes)
 
 
 # ---------------------------------------------------------------- 示範資料

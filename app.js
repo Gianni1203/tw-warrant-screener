@@ -163,7 +163,8 @@
       asof = d.asof;
       ALL = d.rows.map((row) => Object.fromEntries(d.fields.map((f, i) => [f, row[i]])));
       $("#status").textContent = `資料日期 ${d.asof}・更新於 ${d.updated.replace("T", " ")}`
-        + (d.demo ? "・⚠ 目前為示範資料，等第一次自動更新後會換成真實資料" : "");
+        + (d.demo ? "・⚠ 目前為示範資料，等第一次自動更新後會換成真實資料" : "")
+        + (d.notes && d.notes.length ? "・⚠ " + d.notes.join("；") : "");
       const saved = load();
       if (saved) writeForm(saved);
       apply();
