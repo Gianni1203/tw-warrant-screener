@@ -62,20 +62,20 @@
     "NextLimitDown"
    ],
    "sample": {
-    "Date": "1151019",
+    "Date": "1151020",
     "SecuritiesCompanyCode": "00411A",
     "CompanyName": "主動統一前沿科技",
-    "Close": "9.90",
-    "Change": "-0.25",
-    "Open": "9.88",
-    "High": "9.92",
-    "Low": "9.79",
-    "TradingShares": "15296000",
-    "TransactionAmount": "151001750",
-    "TransactionNumber": "2812",
-    "LatestBidPrice": "9.89",
-    "LatesAskPrice": "9.90",
-    "Capitals": "452576000",
+    "Close": "9.87",
+    "Change": "-0.03",
+    "Open": "9.89",
+    "High": "9.95",
+    "Low": "9.81",
+    "TradingShares": "7897000",
+    "TransactionAmount": "78138110",
+    "TransactionNumber": "1405",
+    "LatestBidPrice": "9.86",
+    "LatesAskPrice": "9.87",
+    "Capitals": "453576000",
     "NextLimitUp": "9999.95",
     "NextLimitDown": "0.01"
    }
@@ -160,9 +160,9 @@
   }
  },
  "notes": [
-  "上櫃權證本次未更新（上櫃權證行情日期是 2018-09-17，不是 2026-10-19，資料還沒更新，稍後再跑）"
+  "上櫃權證本次未更新（上櫃權證行情日期是 2018-09-17，不是 2026-10-20，資料還沒更新，稍後再跑）"
  ],
- "error": "上櫃權證行情日期是 2018-09-17，不是 2026-10-19，資料還沒更新，稍後再跑",
- "traceback": "Traceback (most recent call last):\n  File \"/home/runner/work/tw-warrant-screener/tw-warrant-screener/scripts/fetch_warrants.py\", line 405, in run_live\n    tp_rows = build_rows(\"TPEX\", fetch_basic(\"TPEX\"), fetch_tpex_quotes(asof), all_under, asof)\n                                                      ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/tw-warrant-screener/tw-warrant-screener/scripts/fetch_warrants.py\", line 288, in fetch_tpex_quotes\n    check_date(rows, date, \"上櫃權證行情\")\n  File \"/home/runner/work/tw-warrant-screener/tw-warrant-screener/scripts/fetch_warrants.py\", line 242, in check_date\n    raise RuntimeError(f\"{what}日期是 {got}，不是 {date}，資料還沒更新，稍後再跑\")\nRuntimeError: 上櫃權證行情日期是 2018-09-17，不是 2026-10-19，資料還沒更新，稍後再跑\n",
- "asof": "2026-10-19"
+ "error": "上櫃權證行情日期是 2018-09-17，不是 2026-10-20，資料還沒更新，稍後再跑",
+ "traceback": "Traceback (most recent call last):\n  File \"/home/runner/work/tw-warrant-screener/tw-warrant-screener/scripts/fetch_warrants.py\", line 405, in run_live\n    tp_rows = build_rows(\"TPEX\", fetch_basic(\"TPEX\"), fetch_tpex_quotes(asof), all_under, asof)\n                                                      ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/tw-warrant-screener/tw-warrant-screener/scripts/fetch_warrants.py\", line 288, in fetch_tpex_quotes\n    check_date(rows, date, \"上櫃權證行情\")\n  File \"/home/runner/work/tw-warrant-screener/tw-warrant-screener/scripts/fetch_warrants.py\", line 242, in check_date\n    raise RuntimeError(f\"{what}日期是 {got}，不是 {date}，資料還沒更新，稍後再跑\")\nRuntimeError: 上櫃權證行情日期是 2018-09-17，不是 2026-10-20，資料還沒更新，稍後再跑\n",
+ "asof": "2026-10-20"
 }
