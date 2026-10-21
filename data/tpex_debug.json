@@ -62,107 +62,32 @@
     "NextLimitDown"
    ],
    "sample": {
-    "Date": "1151020",
+    "Date": "1151021",
     "SecuritiesCompanyCode": "00411A",
     "CompanyName": "主動統一前沿科技",
-    "Close": "9.87",
-    "Change": "-0.03",
-    "Open": "9.89",
-    "High": "9.95",
-    "Low": "9.81",
-    "TradingShares": "7897000",
-    "TransactionAmount": "78138110",
-    "TransactionNumber": "1405",
-    "LatestBidPrice": "9.86",
-    "LatesAskPrice": "9.87",
+    "Close": "10.04",
+    "Change": "+0.17",
+    "Open": "10.17",
+    "High": "10.19",
+    "Low": "10.03",
+    "TradingShares": "14666000",
+    "TransactionAmount": "148393460",
+    "TransactionNumber": "1049",
+    "LatestBidPrice": "10.04",
+    "LatesAskPrice": "10.05",
     "Capitals": "453576000",
     "NextLimitUp": "9999.95",
     "NextLimitDown": "0.01"
    }
   },
-  "/tpex_warrant_gold": {
-   "rows": 2,
-   "keys": [
-    "Date",
-    "Code",
-    "Name",
-    "ListedDate",
-    "ExpiryDate",
-    "UnderlyingStockCode",
-    "UnderlyingStock",
-    "Type",
-    "American/European",
-    "CapPrice/Index",
-    "FloorPrice/Index",
-    "Reset",
-    "LatestExercisePrice",
-    "LatestExerciseRatio",
-    "InitialIssuance",
-    "Accum.Accum.Issuance",
-    "Accum.CanceledWarrant"
-   ],
-   "sample": {
-    "Date": "1070917",
-    "Code": "70001Y",
-    "Name": "一銀金元大63展01",
-    "ListedDate": "20160929",
-    "ExpiryDate": "20180919",
-    "UnderlyingStockCode": "AU9902",
-    "UnderlyingStock": "一銀金",
-    "Type": "認售",
-    "American/European": "歐式",
-    "CapPrice/Index": "7077.56",
-    "FloorPrice/Index": "",
-    "Reset": "Y",
-    "LatestExercisePrice": "8721.57",
-    "LatestExerciseRatio": "0.001",
-    "InitialIssuance": "20000",
-    "Accum.Accum.Issuance": "0",
-    "Accum.CanceledWarrant": "0"
-   }
-  },
-  "/tpex_warrant_gold_quts": {
-   "rows": 1,
-   "keys": [
-    "Date",
-    "Code",
-    "Name",
-    "Open",
-    "High",
-    "Low",
-    "Close",
-    "Change",
-    "TradeVol.",
-    "No.OfTransactions",
-    "TradeValue",
-    "UnderlyingStockCode",
-    "UnderlyingStock",
-    "UnderlyingStockClosePrice",
-    "UnderlyingStock PriceChange"
-   ],
-   "sample": {
-    "Date": "1070917",
-    "Code": "70001X",
-    "Name": "臺銀金元大63展01",
-    "Open": "---",
-    "High": "---",
-    "Low": "---",
-    "Close": "---",
-    "Change": "---",
-    "TradeVol.": "0",
-    "No.OfTransactions": "0",
-    "TradeValue": "0",
-    "UnderlyingStockCode": "AU9901",
-    "UnderlyingStock": "臺銀金",
-    "UnderlyingStockClosePrice": "4442.15",
-    "UnderlyingStock PriceChange": "-33.2"
-   }
+  "/mopsfin_t187ap37_O": {
+   "error": "Response ended prematurely"
   }
  },
  "notes": [
-  "上櫃權證本次未更新（上櫃權證行情日期是 2018-09-17，不是 2026-10-20，資料還沒更新，稍後再跑）"
+  "上櫃權證本次未更新（無法取得 https://www.tpex.org.tw/openapi/v1/mopsfin_t187ap37_O: Response ended prematurely）"
  ],
- "error": "上櫃權證行情日期是 2018-09-17，不是 2026-10-20，資料還沒更新，稍後再跑",
- "traceback": "Traceback (most recent call last):\n  File \"/home/runner/work/tw-warrant-screener/tw-warrant-screener/scripts/fetch_warrants.py\", line 405, in run_live\n    tp_rows = build_rows(\"TPEX\", fetch_basic(\"TPEX\"), fetch_tpex_quotes(asof), all_under, asof)\n                                                      ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/tw-warrant-screener/tw-warrant-screener/scripts/fetch_warrants.py\", line 288, in fetch_tpex_quotes\n    check_date(rows, date, \"上櫃權證行情\")\n  File \"/home/runner/work/tw-warrant-screener/tw-warrant-screener/scripts/fetch_warrants.py\", line 242, in check_date\n    raise RuntimeError(f\"{what}日期是 {got}，不是 {date}，資料還沒更新，稍後再跑\")\nRuntimeError: 上櫃權證行情日期是 2018-09-17，不是 2026-10-20，資料還沒更新，稍後再跑\n",
- "asof": "2026-10-20"
+ "error": "無法取得 https://www.tpex.org.tw/openapi/v1/mopsfin_t187ap37_O: Response ended prematurely",
+ "traceback": "Traceback (most recent call last):\n  File \"/home/runner/work/tw-warrant-screener/tw-warrant-screener/scripts/fetch_warrants.py\", line 491, in run_live\n    tp_rows = build_rows(\"TPEX\", fetch_basic(\"TPEX\"), fetch_tpex_quotes(asof), all_under, asof)\n                                 ^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/tw-warrant-screener/tw-warrant-screener/scripts/fetch_warrants.py\", line 224, in fetch_basic\n    rows = get_json(TPEX_OPENAPI + path)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/tw-warrant-screener/tw-warrant-screener/scripts/fetch_warrants.py\", line 108, in get_json\n    raise RuntimeError(f\"無法取得 {url}: {last}\")\nRuntimeError: 無法取得 https://www.tpex.org.tw/openapi/v1/mopsfin_t187ap37_O: Response ended prematurely\n",
+ "asof": "2026-10-21"
 }
