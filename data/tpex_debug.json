@@ -81,13 +81,137 @@
    }
   },
   "/mopsfin_t187ap37_O": {
-   "error": "Response ended prematurely"
+   "rows": 16422,
+   "keys": [
+    "出表日期",
+    "權證代號",
+    "權證簡稱",
+    "權證類型",
+    "類別",
+    "流動量提供者報價方式",
+    "履約開始日",
+    "最後交易日",
+    "履約截止日",
+    "發行單位數量(仟單位)",
+    "結算方式(詳附註編號說明)",
+    "標的證券/指數",
+    "最新標的履約配發數量(每仟單位權證)",
+    "原始履約價格(元)/履約指數",
+    "原始上限價格(元)/上限指數",
+    "原始下限價格(元)/下限指數",
+    "最新履約價格(元)/履約指數",
+    "最新上限價格(元)/上限指數",
+    "最新下限價格(元)/下限指數",
+    "備註"
+   ],
+   "sample": {
+    "出表日期": "1151020",
+    "權證代號": "700019",
+    "權證簡稱": "宏捷科統一5C購01",
+    "權證類型": "認購",
+    "類別": "一般型",
+    "流動量提供者報價方式": "主動報價",
+    "履約開始日": "1141001",
+    "最後交易日": "1151229",
+    "履約截止日": "1151231",
+    "發行單位數量(仟單位)": "5000",
+    "結算方式(詳附註編號說明)": "5",
+    "標的證券/指數": "宏捷科",
+    "最新標的履約配發數量(每仟單位權證)": "13.00",
+    "原始履約價格(元)/履約指數": "168.8800",
+    "原始上限價格(元)/上限指數": "0.0000",
+    "原始下限價格(元)/下限指數": "0.0000",
+    "最新履約價格(元)/履約指數": "166.4800",
+    "最新上限價格(元)/上限指數": "0.0000",
+    "最新下限價格(元)/下限指數": "0.0000",
+    "備註": "1.美式價外認購權證　　　　　　　　　　　　\r\n◎2025/12/02申請自行註銷權證500仟單位，剩餘權證4,500仟單位。\r\n◎2026/09/01標的證券除息，調整後履約價格166.48元，調整後行使比例0.013。\r\n◎2026/10/01申請自行註銷權證2,250仟單位，剩餘權證2,250仟單位。"
+   }
+  },
+  "/tpex_warrant_daily_quts": {
+   "rows": 11934,
+   "keys": [
+    "Date",
+    "Code",
+    "Name",
+    "Open",
+    "High",
+    "Low",
+    "Close",
+    "Change",
+    "TradeVol.",
+    "No.OfTransactions",
+    "TradeValue",
+    "UnderlyingStockCode",
+    "UnderlyingStock",
+    "UnderlyingStockClosePrice",
+    "UnderlyingStock PriceChange"
+   ],
+   "sample": {
+    "Date": "1151021",
+    "Code": "72479U",
+    "Name": "擎亞群益5B售01",
+    "Open": "",
+    "High": "",
+    "Low": "",
+    "Close": "",
+    "Change": "",
+    "TradeVol.": "0",
+    "No.OfTransactions": "0",
+    "TradeValue": "0",
+    "UnderlyingStockCode": "8096",
+    "UnderlyingStock": "擎亞",
+    "UnderlyingStockClosePrice": "84.8",
+    "UnderlyingStock PriceChange": "1.40"
+   }
+  },
+  "https://www.tpex.org.tw/www/zh-tw/afterTrading/otc": {
+   "stat": "ok",
+   "tables": [
+    {
+     "title": "上櫃股票每日收盤行情(不含定價)",
+     "fields": [
+      "代號",
+      "名稱",
+      "收盤 ",
+      "漲跌",
+      "開盤 ",
+      "最高 ",
+      "最低",
+      "成交股數  ",
+      " 成交金額(元)",
+      " 成交筆數 ",
+      "最後買價",
+      "最後買量<br>(張數)",
+      "最後賣價",
+      "最後賣量<br>(張數)",
+      "發行股數 ",
+      "次日漲停價 ",
+      "次日跌停價"
+     ],
+     "rows": 12950,
+     "first": [
+      "00411A",
+      "主動統一前沿科技",
+      "10.04",
+      "+0.17",
+      "10.17",
+      "10.19",
+      "10.03",
+      "14,666,000",
+      "148,393,460",
+      "1,049",
+      "10.04",
+      "253",
+      "10.05",
+      "9",
+      "453,576,000",
+      "9,999.95",
+      "0.01"
+     ]
+    }
+   ]
   }
  },
- "notes": [
-  "上櫃權證本次未更新（無法取得 https://www.tpex.org.tw/openapi/v1/mopsfin_t187ap37_O: Response ended prematurely）"
- ],
- "error": "無法取得 https://www.tpex.org.tw/openapi/v1/mopsfin_t187ap37_O: Response ended prematurely",
- "traceback": "Traceback (most recent call last):\n  File \"/home/runner/work/tw-warrant-screener/tw-warrant-screener/scripts/fetch_warrants.py\", line 491, in run_live\n    tp_rows = build_rows(\"TPEX\", fetch_basic(\"TPEX\"), fetch_tpex_quotes(asof), all_under, asof)\n                                 ^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/tw-warrant-screener/tw-warrant-screener/scripts/fetch_warrants.py\", line 224, in fetch_basic\n    rows = get_json(TPEX_OPENAPI + path)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/tw-warrant-screener/tw-warrant-screener/scripts/fetch_warrants.py\", line 108, in get_json\n    raise RuntimeError(f\"無法取得 {url}: {last}\")\nRuntimeError: 無法取得 https://www.tpex.org.tw/openapi/v1/mopsfin_t187ap37_O: Response ended prematurely\n",
+ "notes": [],
  "asof": "2026-10-21"
 }
