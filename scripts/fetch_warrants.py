@@ -219,10 +219,19 @@ def fetch_basic(market: str) -> list[dict]:
         path = choose_path(TWSE_SWAGGER, ["/opendata/t187ap37_L"], ["權證", "基本資料"],
                            "TWSE 權證基本資料", exclude=NOT_WARRANT)
         return get_json(TWSE_OPENAPI + path)
-    path = choose_path(TPEX_SWAGGER, TPEX_BASIC_PATHS, ["權證", "基本資料"],
-                       "TPEx 權證基本資料", exclude=NOT_WARRANT)
-    rows = get_json(TPEX_OPENAPI + path)
-    return [normalize_tpex_basic(r) for r in rows]
+    # 櫃買伺服器傳大檔時偶爾中途斷線，依序嘗試每個已知端點
+    sw_paths = get_json(TPEX_SWAGGER).get("paths", {})
+    errors = []
+    for path in [p for p in TPEX_BASIC_PATHS if p in sw_paths] or [
+            choose_path(TPEX_SWAGGER, [], ["權證", "基本資料"], "TPEx 權證基本資料", exclude=NOT_WARRANT)]:
+        try:
+            rows = get_json(TPEX_OPENAPI + path, retries=4)
+            log(f"TPEx 權證基本資料：{path}，{len(rows)} 筆")
+            return [normalize_tpex_basic(r) for r in rows]
+        except Exception as e:  # noqa: BLE001
+            errors.append(f"{path}: {e}")
+            log(f"⚠ {path} 失敗，改試下一個端點")
+    raise RuntimeError("上櫃權證基本資料都抓不到：" + "；".join(errors))
 
 
 def normalize_tpex_basic(r: dict) -> dict:
@@ -237,8 +246,8 @@ def normalize_tpex_basic(r: dict) -> dict:
         "類別": "",
         "履約截止日": pick(r, "ExpiryDate"),
         "標的證券/指數": f"{pick(r, 'UnderlyingStockCode') or ''} {pick(r, 'UnderlyingStock') or ''}".strip(),
-        # 英文版的行使比例是每單位，換成每仟單位以便統一處理
-        "最新標的履約配發數量(每仟單位權證)": ratio * 1000 if ratio else None,
+        # 英文版的行使比例已是「每單位」，直接帶入，不經過單位判斷
+        "_ratio_per_unit": ratio,
         "最新履約價格(元)/履約指數": pick(r, "LatestExercisePrice"),
     }
 
@@ -440,8 +449,11 @@ def build_rows(market: str, basic: list[dict], quotes: dict[str, dict],
             u_name = underlying.get(u_code, (None, ""))[1]
 
         K = num(pick(r, "最新履約價格", "履約價"))
-        raw_ratio = num(pick(r, "最新標的履約配發數量", "履約配發數量", "行使比例"))
-        ratio = raw_ratio / div if raw_ratio else None
+        if r.get("_ratio_per_unit"):
+            ratio = r["_ratio_per_unit"]
+        else:
+            raw_ratio = num(pick(r, "最新標的履約配發數量", "履約配發數量", "行使比例"))
+            ratio = raw_ratio / div if raw_ratio else None
         expiry = parse_date(pick(r, "履約截止日", "到期日")) or parse_date(pick(r, "最後交易日"))
         days = (expiry - asof).days if expiry else None
         if days is not None and days < 0:
