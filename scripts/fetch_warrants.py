@@ -62,6 +62,11 @@ def _record(url: str, data=None, err=None):
         if data and isinstance(data[0], dict):
             ent["keys"] = list(data[0].keys())
             ent["sample"] = data[0]
+    elif isinstance(data, dict) and isinstance(data.get("tables"), list):
+        ent["stat"] = data.get("stat")
+        ent["tables"] = [{"title": t.get("title"), "fields": t.get("fields"),
+                          "rows": len(t.get("data") or []), "first": (t.get("data") or [None])[0]}
+                         for t in data["tables"][:5]]
     elif isinstance(data, dict) and "paths" in data:
         ent["paths"] = {}
         for p, ops in data["paths"].items():
@@ -185,14 +190,57 @@ def split_underlying(v: str) -> tuple[str | None, str]:
 
 # ---------------------------------------------------------------- 資料抓取
 
-def fetch_basic(market: str) -> list[dict]:
-    swagger, base = (TWSE_SWAGGER, TWSE_OPENAPI) if market == "TWSE" else (TPEX_SWAGGER, TPEX_OPENAPI)
-    hits = find_paths(swagger, ["權證", "基本資料"], exclude=["牛熊", "發行人", "海外", "議約"])
+# 已確認的端點（2026-10 從櫃買中心 swagger 查得）。優先使用；找不到才用關鍵字搜尋。
+# 注意：櫃買 swagger 裡還有「黃金現貨權證」等名稱相近但內容完全不同的 API，不能只靠關鍵字。
+TPEX_BASIC_PATHS = ["/mopsfin_t187ap37_O", "/tpex_warrant_issue"]
+TPEX_QUOTE_PATHS = ["/tpex_warrant_daily_quts"]
+TPEX_UNDER_PATHS = ["/tpex_mainboard_quotes", "/tpex_mainboard_daily_close_quotes"]
+# 關鍵字搜尋時一律排除的字
+NOT_WARRANT = ["黃金", "牛熊", "展延", "月報", "單筆", "暫停", "人數", "統計", "年度", "發行人", "海外", "議約"]
+
+
+def choose_path(swagger_url: str, preferred: list[str], must: list[str], what: str,
+                any_of: list[str] | None = None, exclude: list[str] | None = None) -> str:
+    sw = get_json(swagger_url)
+    paths = sw.get("paths", {})
+    for p in preferred:
+        if p in paths:
+            log(f"{what}：{p}（{(paths[p].get('get') or {}).get('summary', '')}）")
+            return p
+    hits = find_paths(swagger_url, must, any_of=any_of, exclude=exclude)
     if not hits:
-        raise RuntimeError(f"{market} swagger 找不到權證基本資料 API")
-    path, summary = hits[0]
-    log(f"{market} 權證基本資料：{path}（{summary}）")
-    return get_json(base + path)
+        raise RuntimeError(f"swagger 找不到{what} API")
+    log(f"{what}：{hits[0][0]}（{hits[0][1]}，關鍵字搜尋）")
+    return hits[0][0]
+
+
+def fetch_basic(market: str) -> list[dict]:
+    if market == "TWSE":
+        path = choose_path(TWSE_SWAGGER, ["/opendata/t187ap37_L"], ["權證", "基本資料"],
+                           "TWSE 權證基本資料", exclude=NOT_WARRANT)
+        return get_json(TWSE_OPENAPI + path)
+    path = choose_path(TPEX_SWAGGER, TPEX_BASIC_PATHS, ["權證", "基本資料"],
+                       "TPEx 權證基本資料", exclude=NOT_WARRANT)
+    rows = get_json(TPEX_OPENAPI + path)
+    return [normalize_tpex_basic(r) for r in rows]
+
+
+def normalize_tpex_basic(r: dict) -> dict:
+    """/tpex_warrant_issue 是英文欄位，轉成和證交所相同的中文欄位名稱。"""
+    if "權證代號" in r:
+        return r
+    ratio = num(pick(r, "LatestExerciseRatio", "ExerciseRatio"))
+    return {
+        "權證代號": pick(r, "Code", "SecuritiesCompanyCode"),
+        "權證簡稱": pick(r, "Name"),
+        "權證類型": pick(r, "Type") or "",
+        "類別": "",
+        "履約截止日": pick(r, "ExpiryDate"),
+        "標的證券/指數": f"{pick(r, 'UnderlyingStockCode') or ''} {pick(r, 'UnderlyingStock') or ''}".strip(),
+        # 英文版的行使比例是每單位，換成每仟單位以便統一處理
+        "最新標的履約配發數量(每仟單位權證)": ratio * 1000 if ratio else None,
+        "最新履約價格(元)/履約指數": pick(r, "LatestExercisePrice"),
+    }
 
 
 def fetch_twse_underlying(date: dt.date) -> dict[str, tuple[float, str]]:
@@ -218,10 +266,8 @@ def fetch_twse_underlying(date: dt.date) -> dict[str, tuple[float, str]]:
 
 
 def fetch_tpex_underlying(date: dt.date) -> dict[str, tuple[float, str]]:
-    hits = find_paths(TPEX_SWAGGER, ["收盤"], any_of=["上櫃股票", "上櫃證券"], exclude=["權證", "債", "興櫃"])
-    paths = [p for p, _ in hits]
-    # 已知的上櫃個股收盤行情端點優先
-    path = "/tpex_mainboard_daily_close_quotes" if ("/tpex_mainboard_daily_close_quotes" in paths or not paths) else paths[0]
+    path = choose_path(TPEX_SWAGGER, TPEX_UNDER_PATHS, ["收盤"], "上櫃標的收盤價",
+                       any_of=["上櫃股票", "上櫃證券"], exclude=["權證", "債", "興櫃", "盤後定價", "暫緩", "指數"])
     rows = get_json(TPEX_OPENAPI + path)
     check_date(rows, date, "上櫃標的收盤價")
     out = {}
@@ -277,13 +323,8 @@ def fetch_twse_quotes(date: dt.date) -> dict[str, dict]:
 
 
 def fetch_tpex_quotes(date: dt.date) -> dict[str, dict]:
-    hits = find_paths(TPEX_SWAGGER, ["權證"], any_of=["行情", "收盤", "成交"],
-                      exclude=["牛熊", "基本資料", "發行人", "註銷", "重大"])
-    if not hits:
-        log("⚠ TPEx swagger 找不到權證行情 API，上櫃權證將沒有報價")
-        return {}
-    path, summary = hits[0]
-    log(f"TPEx 權證行情：{path}（{summary}）")
+    path = choose_path(TPEX_SWAGGER, TPEX_QUOTE_PATHS, ["權證"], "TPEx 權證行情",
+                       any_of=["行情", "收盤"], exclude=NOT_WARRANT + ["基本資料", "註銷", "重大"])
     rows = get_json(TPEX_OPENAPI + path)
     check_date(rows, date, "上櫃權證行情")
     out = {}
@@ -295,9 +336,53 @@ def fetch_tpex_quotes(date: dt.date) -> dict[str, dict]:
             "bid": num(pick(r, "LatestBidPrice", "BidPrice", "Bid", "最後買價", "買價")),
             "ask": num(pick(r, "LatesAskPrice", "LatestAskPrice", "AskPrice", "Ask", "最後賣價", "賣價")),
             "close": num(pick(r, "Close", "ClosingPrice", "收盤")),
-            "vol": num(pick(r, "TradingShares", "TradeVolume", "Volume", "成交股數", "成交數量")),
+            "vol": num(pick(r, "TradingShares", "TradeVol", "TradeVolume", "Volume", "成交股數", "成交數量")),
+            # 行情表若附標的收盤價，當作標的價的備援
+            "S": num(pick(r, "UnderlyingStockClosePrice", "UnderlyingClose", "標的收盤")),
         }
+    log(f"TPEx 權證行情 {len(out)} 檔，有買賣價 {sum(1 for q in out.values() if q['bid'] or q['ask'])} 檔")
+    if out and not any(q["bid"] or q["ask"] for q in out.values()):
+        try:
+            web = fetch_tpex_web_bidask(date)
+            for code, q in out.items():
+                w = web.get(code)
+                if w:
+                    q["bid"], q["ask"] = w["bid"], w["ask"]
+            log(f"從櫃買網站補上買賣價 {sum(1 for c in out if c in web)} 檔")
+        except Exception as e:  # noqa: BLE001
+            log(f"⚠ 櫃買網站買賣價備援失敗：{e}")
     return out
+
+
+TPEX_WEB_QUOTES = [
+    # 櫃買網站「上櫃股票行情」盤後資料（type=AL 為所有證券，含權證）
+    ("https://www.tpex.org.tw/www/zh-tw/afterTrading/otc",
+     lambda d: {"date": d.strftime("%Y/%m/%d"), "type": "AL", "response": "json"}),
+    ("https://www.tpex.org.tw/www/zh-tw/afterTrading/dailyQ",
+     lambda d: {"date": d.strftime("%Y/%m/%d"), "type": "AL", "response": "json"}),
+]
+
+
+def fetch_tpex_web_bidask(date: dt.date) -> dict[str, dict]:
+    """備援：櫃買網站盤後行情的最後買賣價（OpenAPI 權證行情沒有提供時使用）。"""
+    for url, params in TPEX_WEB_QUOTES:
+        try:
+            js = get_json(url, params(date), retries=1)
+        except Exception:  # noqa: BLE001
+            continue
+        out = {}
+        for fields, data in _mi_index_tables(js):
+            if not (any("代號" in f for f in fields) and any("買價" in f for f in fields)):
+                continue
+            for row in data:
+                r = dict(zip(fields, row))
+                code = str(pick(r, "代號") or "").strip()
+                if code:
+                    out[code] = {"bid": num(pick(r, "最後買價", "買價")), "ask": num(pick(r, "最後賣價", "賣價"))}
+        if out:
+            log(f"櫃買網站行情（{url}）{len(out)} 筆")
+            return out
+    raise RuntimeError("櫃買網站行情沒有可用的買賣價欄位")
 
 
 def latest_twse_quotes() -> tuple[dt.date, dict]:
@@ -350,6 +435,7 @@ def build_rows(market: str, basic: list[dict], quotes: dict[str, dict],
         if not u_code:
             u_code = name_to_code.get(u_name)
         S = underlying.get(u_code, (None, ""))[0] if u_code else None
+        S = S or quotes.get(code, {}).get("S")
         if u_code and not u_name:
             u_name = underlying.get(u_code, (None, ""))[1]
 
@@ -406,7 +492,7 @@ def run_live():
         if not tp_rows:
             raise RuntimeError("上櫃權證基本資料解析後是 0 檔")
         if not any(r[11] or r[12] for r in tp_rows):
-            notes.append("上櫃權證沒有買賣價，差槓比無法計算")
+            notes.append("上櫃權證行情沒有提供買賣價，上櫃權證的價差比、差槓比暫時無法計算")
         rows += tp_rows
     except Exception as e:  # noqa: BLE001  上櫃失敗不影響上市資料
         import traceback
