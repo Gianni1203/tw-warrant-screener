@@ -62,73 +62,70 @@
     "NextLimitDown"
    ],
    "sample": {
-    "Date": "1151027",
+    "Date": "1151028",
     "SecuritiesCompanyCode": "00411A",
     "CompanyName": "主動統一前沿科技",
-    "Close": "9.91",
-    "Change": "-0.02",
+    "Close": "10.21",
+    "Change": "+0.30",
     "Open": "10.10",
-    "High": "10.10",
-    "Low": "9.88",
-    "TradingShares": "7769000",
-    "TransactionAmount": "77335430",
-    "TransactionNumber": "989",
-    "LatestBidPrice": "9.91",
-    "LatesAskPrice": "9.92",
-    "Capitals": "461076000",
+    "High": "10.25",
+    "Low": "10.10",
+    "TradingShares": "7174000",
+    "TransactionAmount": "73034400",
+    "TransactionNumber": "800",
+    "LatestBidPrice": "10.20",
+    "LatesAskPrice": "10.21",
+    "Capitals": "460576000",
     "NextLimitUp": "9999.95",
     "NextLimitDown": "0.01"
    }
   },
   "/mopsfin_t187ap37_O": {
-   "rows": 16807,
+   "error": "Response ended prematurely"
+  },
+  "/tpex_warrant_issue": {
+   "rows": 12107,
    "keys": [
-    "出表日期",
-    "權證代號",
-    "權證簡稱",
-    "權證類型",
-    "類別",
-    "流動量提供者報價方式",
-    "履約開始日",
-    "最後交易日",
-    "履約截止日",
-    "發行單位數量(仟單位)",
-    "結算方式(詳附註編號說明)",
-    "標的證券/指數",
-    "最新標的履約配發數量(每仟單位權證)",
-    "原始履約價格(元)/履約指數",
-    "原始上限價格(元)/上限指數",
-    "原始下限價格(元)/下限指數",
-    "最新履約價格(元)/履約指數",
-    "最新上限價格(元)/上限指數",
-    "最新下限價格(元)/下限指數",
-    "備註"
+    "Date",
+    "Code",
+    "Name",
+    "ListedDate",
+    "ExpiryDate",
+    "UnderlyingStockCode",
+    "UnderlyingStock",
+    "Type",
+    "American/European",
+    "CapPrice/Index",
+    "FloorPrice/Index",
+    "Reset",
+    "LatestExercisePrice",
+    "Latest ExerciseRatio",
+    "InitialIssuance",
+    "Accum.Accum.Issuance",
+    "Accum.CanceledWarrant"
    ],
    "sample": {
-    "出表日期": "1151027",
-    "權證代號": "700019",
-    "權證簡稱": "宏捷科統一5C購01",
-    "權證類型": "認購",
-    "類別": "一般型",
-    "流動量提供者報價方式": "主動報價",
-    "履約開始日": "1141001",
-    "最後交易日": "1151229",
-    "履約截止日": "1151231",
-    "發行單位數量(仟單位)": "5000",
-    "結算方式(詳附註編號說明)": "5",
-    "標的證券/指數": "宏捷科",
-    "最新標的履約配發數量(每仟單位權證)": "13.00",
-    "原始履約價格(元)/履約指數": "168.8800",
-    "原始上限價格(元)/上限指數": "0.0000",
-    "原始下限價格(元)/下限指數": "0.0000",
-    "最新履約價格(元)/履約指數": "166.4800",
-    "最新上限價格(元)/上限指數": "0.0000",
-    "最新下限價格(元)/下限指數": "0.0000",
-    "備註": "1.美式價外認購權證　　　　　　　　　　　　\r\n◎2025/12/02申請自行註銷權證500仟單位，剩餘權證4,500仟單位。\r\n◎2026/09/01標的證券除息，調整後履約價格166.48元，調整後行使比例0.013。\r\n◎2026/10/01申請自行註銷權證2,250仟單位，剩餘權證2,250仟單位。"
+    "Date": "1151028",
+    "Code": "72479U",
+    "Name": "擎亞群益5B售01",
+    "ListedDate": "20251105",
+    "ExpiryDate": "20261104",
+    "UnderlyingStockCode": "8096",
+    "UnderlyingStock": "擎亞",
+    "Type": "認售",
+    "American/European": "歐式",
+    "CapPrice/Index": "    ",
+    "FloorPrice/Index": "    ",
+    "Reset": "N",
+    "LatestExercisePrice": "39.8",
+    "Latest ExerciseRatio": "0.078",
+    "InitialIssuance": "5000",
+    "Accum.Accum.Issuance": "0",
+    "Accum.CanceledWarrant": "3349"
    }
   },
   "/tpex_warrant_daily_quts": {
-   "rows": 12166,
+   "rows": 12107,
    "keys": [
     "Date",
     "Code",
@@ -147,7 +144,7 @@
     "UnderlyingStock PriceChange"
    ],
    "sample": {
-    "Date": "1151027",
+    "Date": "1151028",
     "Code": "72479U",
     "Name": "擎亞群益5B售01",
     "Open": "",
@@ -160,58 +157,19 @@
     "TradeValue": "0",
     "UnderlyingStockCode": "8096",
     "UnderlyingStock": "擎亞",
-    "UnderlyingStockClosePrice": "82.5",
-    "UnderlyingStock PriceChange": "1.20"
+    "UnderlyingStockClosePrice": "86.2",
+    "UnderlyingStock PriceChange": "3.70"
    }
   },
   "https://www.tpex.org.tw/www/zh-tw/afterTrading/otc": {
-   "stat": "ok",
-   "tables": [
-    {
-     "title": "上櫃股票每日收盤行情(不含定價)",
-     "fields": [
-      "代號",
-      "名稱",
-      "收盤 ",
-      "漲跌",
-      "開盤 ",
-      "最高 ",
-      "最低",
-      "成交股數  ",
-      " 成交金額(元)",
-      " 成交筆數 ",
-      "最後買價",
-      "最後買量<br>(張數)",
-      "最後賣價",
-      "最後賣量<br>(張數)",
-      "發行股數 ",
-      "次日漲停價 ",
-      "次日跌停價"
-     ],
-     "rows": 13186,
-     "first": [
-      "00411A",
-      "主動統一前沿科技",
-      "9.91",
-      "-0.02",
-      "10.10",
-      "10.10",
-      "9.88",
-      "7,769,000",
-      "77,335,430",
-      "989",
-      "9.91",
-      "140",
-      "9.92",
-      "331",
-      "461,076,000",
-      "9,999.95",
-      "0.01"
-     ]
-    }
-   ]
+   "error": "Response ended prematurely"
+  },
+  "https://www.tpex.org.tw/www/zh-tw/afterTrading/dailyQ": {
+   "error": "Expecting value: line 1 column 1 (char 0)"
   }
  },
- "notes": [],
- "asof": "2026-10-27"
+ "notes": [
+  "上櫃權證行情沒有提供買賣價，上櫃權證的價差比、差槓比暫時無法計算"
+ ],
+ "asof": "2026-10-28"
 }
