@@ -42,7 +42,7 @@
    }
   },
   "/tpex_mainboard_quotes": {
-   "rows": 1018,
+   "rows": 1017,
    "keys": [
     "Date",
     "SecuritiesCompanyCode",
@@ -62,26 +62,26 @@
     "NextLimitDown"
    ],
    "sample": {
-    "Date": "1151104",
+    "Date": "1151105",
     "SecuritiesCompanyCode": "00411A",
     "CompanyName": "主動統一前沿科技",
-    "Close": "9.22",
-    "Change": "+0.13",
-    "Open": "9.29",
-    "High": "9.30",
-    "Low": "8.99",
-    "TradingShares": "15448000",
-    "TransactionAmount": "140635240",
-    "TransactionNumber": "1406",
-    "LatestBidPrice": "9.21",
-    "LatesAskPrice": "9.22",
-    "Capitals": "464576000",
+    "Close": "8.91",
+    "Change": "-0.31",
+    "Open": "9.20",
+    "High": "9.20",
+    "Low": "8.91",
+    "TradingShares": "15168000",
+    "TransactionAmount": "136217170",
+    "TransactionNumber": "1656",
+    "LatestBidPrice": "8.90",
+    "LatesAskPrice": "8.91",
+    "Capitals": "469076000",
     "NextLimitUp": "9999.95",
     "NextLimitDown": "0.01"
    }
   },
   "/mopsfin_t187ap37_O": {
-   "rows": 17566,
+   "rows": 17665,
    "keys": [
     "出表日期",
     "權證代號",
@@ -105,7 +105,7 @@
     "備註"
    ],
    "sample": {
-    "出表日期": "1151104",
+    "出表日期": "1151105",
     "權證代號": "700019",
     "權證簡稱": "宏捷科統一5C購01",
     "權證類型": "認購",
@@ -128,7 +128,7 @@
    }
   },
   "/tpex_warrant_daily_quts": {
-   "rows": 12608,
+   "rows": 12662,
    "keys": [
     "Date",
     "Code",
@@ -147,21 +147,21 @@
     "UnderlyingStock PriceChange"
    ],
    "sample": {
-    "Date": "1151104",
+    "Date": "1151105",
     "Code": "72501U",
     "Name": "雙鴻中信5B售02",
-    "Open": "0.02",
-    "High": "0.02",
-    "Low": "0.02",
-    "Close": "0.02",
-    "Change": "0.00",
-    "TradeVol.": "100000",
-    "No.OfTransactions": "1",
-    "TradeValue": "2000",
+    "Open": "",
+    "High": "",
+    "Low": "",
+    "Close": "",
+    "Change": "",
+    "TradeVol.": "0",
+    "No.OfTransactions": "0",
+    "TradeValue": "0",
     "UnderlyingStockCode": "3324",
     "UnderlyingStock": "雙鴻",
-    "UnderlyingStockClosePrice": "1300",
-    "UnderlyingStock PriceChange": "20.00"
+    "UnderlyingStockClosePrice": "1170",
+    "UnderlyingStock PriceChange": "130.00"
    }
   },
   "https://www.tpex.org.tw/www/zh-tw/afterTrading/otc": {
@@ -188,23 +188,23 @@
       "次日漲停價 ",
       "次日跌停價"
      ],
-     "rows": 13626,
+     "rows": 13679,
      "first": [
       "00411A",
       "主動統一前沿科技",
-      "9.22",
-      "+0.13",
-      "9.29",
-      "9.30",
-      "8.99",
-      "15,448,000",
-      "140,635,240",
-      "1,406",
-      "9.21",
-      "8",
-      "9.22",
-      "228",
-      "464,576,000",
+      "8.91",
+      "-0.31",
+      "9.20",
+      "9.20",
+      "8.91",
+      "15,168,000",
+      "136,217,170",
+      "1,656",
+      "8.90",
+      "376",
+      "8.91",
+      "227",
+      "469,076,000",
       "9,999.95",
       "0.01"
      ]
@@ -213,5 +213,5 @@
   }
  },
  "notes": [],
- "asof": "2026-11-04"
+ "asof": "2026-11-05"
 }
