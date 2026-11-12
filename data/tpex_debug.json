@@ -62,26 +62,26 @@
     "NextLimitDown"
    ],
    "sample": {
-    "Date": "1151111",
+    "Date": "1151112",
     "SecuritiesCompanyCode": "00411A",
     "CompanyName": "主動統一前沿科技",
-    "Close": "9.28",
-    "Change": "+0.16",
-    "Open": "9.13",
-    "High": "9.28",
-    "Low": "9.12",
-    "TradingShares": "6832000",
-    "TransactionAmount": "62955790",
-    "TransactionNumber": "468",
-    "LatestBidPrice": "9.27",
-    "LatesAskPrice": "9.28",
+    "Close": "9.15",
+    "Change": "-0.13",
+    "Open": "9.19",
+    "High": "9.33",
+    "Low": "9.15",
+    "TradingShares": "8652000",
+    "TransactionAmount": "79992080",
+    "TransactionNumber": "693",
+    "LatestBidPrice": "9.15",
+    "LatesAskPrice": "9.16",
     "Capitals": "470576000",
     "NextLimitUp": "9999.95",
     "NextLimitDown": "0.01"
    }
   },
   "/mopsfin_t187ap37_O": {
-   "rows": 18050,
+   "rows": 18132,
    "keys": [
     "出表日期",
     "權證代號",
@@ -105,7 +105,7 @@
     "備註"
    ],
    "sample": {
-    "出表日期": "1151111",
+    "出表日期": "1151112",
     "權證代號": "700019",
     "權證簡稱": "宏捷科統一5C購01",
     "權證類型": "認購",
@@ -128,7 +128,7 @@
    }
   },
   "/tpex_warrant_daily_quts": {
-   "rows": 12732,
+   "rows": 12769,
    "keys": [
     "Date",
     "Code",
@@ -147,7 +147,7 @@
     "UnderlyingStock PriceChange"
    ],
    "sample": {
-    "Date": "1151111",
+    "Date": "1151112",
     "Code": "72523U",
     "Name": "新應材群益5B售01",
     "Open": "",
@@ -160,8 +160,8 @@
     "TradeValue": "0",
     "UnderlyingStockCode": "4749",
     "UnderlyingStock": "新應材",
-    "UnderlyingStockClosePrice": "703",
-    "UnderlyingStock PriceChange": "40.00"
+    "UnderlyingStockClosePrice": "683",
+    "UnderlyingStock PriceChange": "20.00"
    }
   },
   "https://www.tpex.org.tw/www/zh-tw/afterTrading/otc": {
@@ -188,22 +188,22 @@
       "次日漲停價 ",
       "次日跌停價"
      ],
-     "rows": 13752,
+     "rows": 13789,
      "first": [
       "00411A",
       "主動統一前沿科技",
-      "9.28",
-      "+0.16",
-      "9.13",
-      "9.28",
-      "9.12",
-      "6,832,000",
-      "62,955,790",
-      "468",
-      "9.27",
-      "12",
-      "9.28",
-      "526",
+      "9.15",
+      "-0.13",
+      "9.19",
+      "9.33",
+      "9.15",
+      "8,652,000",
+      "79,992,080",
+      "693",
+      "9.15",
+      "137",
+      "9.16",
+      "31",
       "470,576,000",
       "9,999.95",
       "0.01"
@@ -213,5 +213,5 @@
   }
  },
  "notes": [],
- "asof": "2026-11-11"
+ "asof": "2026-11-12"
 }
