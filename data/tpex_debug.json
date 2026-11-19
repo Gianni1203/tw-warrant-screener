@@ -42,7 +42,7 @@
    }
   },
   "/tpex_mainboard_quotes": {
-   "rows": 1021,
+   "rows": 1020,
    "keys": [
     "Date",
     "SecuritiesCompanyCode",
@@ -62,26 +62,26 @@
     "NextLimitDown"
    ],
    "sample": {
-    "Date": "1151118",
+    "Date": "1151119",
     "SecuritiesCompanyCode": "00411A",
     "CompanyName": "主動統一前沿科技",
-    "Close": "8.62",
-    "Change": "-0.02",
-    "Open": "8.67",
-    "High": "8.72",
-    "Low": "8.51",
-    "TradingShares": "9179000",
-    "TransactionAmount": "79001390",
-    "TransactionNumber": "662",
+    "Close": "8.63",
+    "Change": "+0.01",
+    "Open": "8.73",
+    "High": "8.84",
+    "Low": "8.60",
+    "TradingShares": "7649000",
+    "TransactionAmount": "66308070",
+    "TransactionNumber": "546",
     "LatestBidPrice": "8.62",
     "LatesAskPrice": "8.63",
-    "Capitals": "478576000",
+    "Capitals": "482576000",
     "NextLimitUp": "9999.95",
     "NextLimitDown": "0.01"
    }
   },
   "/mopsfin_t187ap37_O": {
-   "rows": 18468,
+   "rows": 18521,
    "keys": [
     "出表日期",
     "權證代號",
@@ -105,7 +105,7 @@
     "備註"
    ],
    "sample": {
-    "出表日期": "1151118",
+    "出表日期": "1151119",
     "權證代號": "700019",
     "權證簡稱": "宏捷科統一5C購01",
     "權證類型": "認購",
@@ -128,7 +128,7 @@
    }
   },
   "/tpex_warrant_daily_quts": {
-   "rows": 12879,
+   "rows": 12920,
    "keys": [
     "Date",
     "Code",
@@ -147,7 +147,7 @@
     "UnderlyingStock PriceChange"
    ],
    "sample": {
-    "Date": "1151118",
+    "Date": "1151119",
     "Code": "72572U",
     "Name": "精測群益62售01",
     "Open": "",
@@ -160,8 +160,8 @@
     "TradeValue": "0",
     "UnderlyingStockCode": "6510",
     "UnderlyingStock": "精測",
-    "UnderlyingStockClosePrice": "2915",
-    "UnderlyingStock PriceChange": "185.00"
+    "UnderlyingStockClosePrice": "2625",
+    "UnderlyingStock PriceChange": "290.00"
    }
   },
   "https://www.tpex.org.tw/www/zh-tw/afterTrading/otc": {
@@ -188,23 +188,23 @@
       "次日漲停價 ",
       "次日跌停價"
      ],
-     "rows": 13900,
+     "rows": 13940,
      "first": [
       "00411A",
       "主動統一前沿科技",
-      "8.62",
-      "-0.02",
-      "8.67",
-      "8.72",
-      "8.51",
-      "9,179,000",
-      "79,001,390",
-      "662",
-      "8.62",
-      "112",
       "8.63",
-      "150",
-      "478,576,000",
+      "+0.01",
+      "8.73",
+      "8.84",
+      "8.60",
+      "7,649,000",
+      "66,308,070",
+      "546",
+      "8.62",
+      "412",
+      "8.63",
+      "52",
+      "482,576,000",
       "9,999.95",
       "0.01"
      ]
@@ -213,5 +213,5 @@
   }
  },
  "notes": [],
- "asof": "2026-11-18"
+ "asof": "2026-11-19"
 }
